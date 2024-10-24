@@ -1,0 +1,287 @@
+<!DOCTYPE HTML>
+<html lang="zh" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Workflows - os-checker book</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/pagetoc.css">
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../index.html"><strong aria-hidden="true">1.</strong> 介绍</a></li><li class="chapter-item expanded "><a href="../config.html"><strong aria-hidden="true">2.</strong> JSON 配置文件</a></li><li class="chapter-item expanded "><a href="../WebUI.html"><strong aria-hidden="true">3.</strong> WebUI 使用说明</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../WebUI/workflows.html" class="active"><strong aria-hidden="true">3.1.</strong> Workflows</a></li></ol></li><li class="chapter-item expanded "><a href="../devlogs.html"><strong aria-hidden="true">4.</strong> 开发日志</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">os-checker book</h1>
+
+                    <div class="right-buttons">
+                        <a href="https://github.com/os-checker/os-checker" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/os-checker/book/edit/main/src/WebUI/workflows.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <h1 id="workflows-统计页面"><a class="header" href="#workflows-统计页面">Workflows 统计页面</a></h1>
+<p>地址：<a href="https://os-checker.github.io/workflows">https://os-checker.github.io/workflows</a></p>
+<h2 id="仓库汇总和明细表"><a class="header" href="#仓库汇总和明细表">仓库汇总和明细表</a></h2>
+<p><img src="https://github.com/user-attachments/assets/ff96cb47-b250-467c-892a-3b57cbeea48d" alt="截图_20241023224448" /></p>
+<p>按顺序依次介绍：</p>
+<ol>
+<li>仓库选择/搜索框：支持多选；不支持模糊搜索；无选择和全选都表示全选；</li>
+<li>仓库计数描述：总仓库数、运行 Workflows 的次数非 0 和为 0 的仓库数量；</li>
+<li>汇总表：每行为一个仓库的 Github Action 总运行数和最近更新的情况；单击一行时，更新明细表；</li>
+<li>明细表：Workflows 的详细情况<sup class="footnote-reference"><a href="#details">1</a></sup>；单击一行，则弹出具体 Jobs 的运行情况。</li>
+</ol>
+<div class="footnote-definition" id="details"><sup class="footnote-definition-label">1</sup>
+<p>目前虽然已经保存了很多 Workflows 字段数据
+<a href="https://github.com/os-checker/database/blob/main/plugin/github-api/workflows/Starry-OS/Starry.json">(示例)</a>，但
+WebUI 只展现了最重要的一部分；如果有人想尽快看到其他字段的数据，可以和我交流。</p>
+</div>
+<h2 id="jobs-与-steps-运行情况"><a class="header" href="#jobs-与-steps-运行情况">Jobs 与 Steps 运行情况</a></h2>
+<p><img src="https://github.com/user-attachments/assets/e6d53d66-7e70-4c2b-96b4-b6c99fc7b71e" alt="截图_20241023220809" /></p>
+<p>按标注顺序依次介绍：</p>
+<ol>
+<li>仓库名称：点击跳转<sup class="footnote-reference"><a href="#open">2</a></sup>至该仓库的 Github 页面；</li>
+<li>Workflow 名称：也就是定义在 <code>.github/workflows/file.yml</code> 中的 <code>name: xxx</code>（通常为第一行）；点击跳转至 Workflow 运行页面；</li>
+<li>标题：每个 Workflow 都附带一个与提交信息相同或者缩减的标题；</li>
+<li>Jobs 统计：每个 Workflow 都直接由 jobs 组成（与 yml 中的 jobs 字段对应），因此可以计算总数；而每个 job 有完成的状态和完成的结果，从而分为 completed 和 success<sup class="footnote-reference"><a href="#success">3</a></sup> 维度上的计数；</li>
+<li>Steps 统计：每个 job 直接由 steps 组成（与 yml 中的 steps 字段对应）；统计逻辑与 jobs 一致；</li>
+<li>Job 的序号：序号从 1 开始，并且红色表示该 job 包含 failure，绿色表示该 job 不含 failure；</li>
+<li>Job 的名称：来自 yml 中 jobs 中的 name 字段；点击该名称所在的块元素可以收起和展开 Job 详情；默认收起所有 success Jobs，展开 failure Jobs；</li>
+<li>Job 详情：即 Steps 运行情况，每行从左至右为
+<ul>
+<li>step 的完成结果图标（结果有成功、跳过、失败），并辅助颜色识别；</li>
+<li>step 的编号，来自 Github（可能存在不连续）；</li>
+<li>step 的名称：来自 yml 中的 jobs.steps 中的 name 或者 use 字段；</li>
+<li>开始和结束时间：已转换为本地时区（东八区，但由浏览器设置决定）；</li>
+<li>耗时：单位为秒；</li>
+</ul>
+</li>
+<li>Job 链接：点击跳转至 Github Action 的 Job 页面；</li>
+<li>查看日志的命令<sup class="footnote-reference"><a href="#log">4</a></sup>：通常 Job 页面有按钮可以下载日志（运行结束才可下载），但也可以通过 Github 官方 gh 命令行工具下载到本地，并利用 <code>less -R</code> 命令，在终端方便地查看带颜色的长日志。</li>
+</ol>
+<div class="footnote-definition" id="open"><sup class="footnote-definition-label">2</sup>
+<p>以上跳转操作都打开新标签页。</p>
+</div>
+<div class="footnote-definition" id="success"><sup class="footnote-definition-label">3</sup>
+<p>具体来说，skipped 之类的非 failure 状态也算作了 success。</p>
+</div>
+<div class="footnote-definition" id="log"><sup class="footnote-definition-label">4</sup>
+<p>示例和说明见 <a href="https://github.com/os-checker/os-checker.github.io/issues/86">#86</a>。</p>
+</div>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../WebUI.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../devlogs.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../WebUI.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../devlogs.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="../ace.js"></script>
+        <script src="../editor.js"></script>
+        <script src="../mode-rust.js"></script>
+        <script src="../theme-dawn.js"></script>
+        <script src="../theme-tomorrow_night.js"></script>
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/pagetoc.js"></script>
+
+
+    </div>
+    </body>
+</html>

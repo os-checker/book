@@ -1,0 +1,488 @@
+<!DOCTYPE HTML>
+<html lang="zh" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>JSON 配置文件 - os-checker book</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="theme/pagetoc.css">
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="index.html"><strong aria-hidden="true">1.</strong> 介绍</a></li><li class="chapter-item expanded "><a href="config.html" class="active"><strong aria-hidden="true">2.</strong> JSON 配置文件</a></li><li class="chapter-item expanded "><a href="WebUI.html"><strong aria-hidden="true">3.</strong> WebUI 使用说明</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="WebUI/workflows.html"><strong aria-hidden="true">3.1.</strong> Workflows</a></li></ol></li><li class="chapter-item expanded "><a href="devlogs.html"><strong aria-hidden="true">4.</strong> 开发日志</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">os-checker book</h1>
+
+                    <div class="right-buttons">
+                        <a href="https://github.com/os-checker/os-checker" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/os-checker/book/edit/main/src/config.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <h1 id="os-checker-json-配置格式"><a class="header" href="#os-checker-json-配置格式">os-checker JSON 配置格式</a></h1>
+<h2 id="快速指定一组仓库"><a class="header" href="#快速指定一组仓库">快速指定一组仓库</a></h2>
+<p>并采用默认的检查方式</p>
+<pre><code class="language-json">{
+  "user1/repo": {},
+  "user2/repo": {},
+}
+</code></pre>
+<h2 id="指定仓库的配置选项"><a class="header" href="#指定仓库的配置选项">指定仓库的配置选项</a></h2>
+<p>在 <code>{}</code> 中指定仓库的配置选项</p>
+<pre><code class="language-json">{
+  "user1/repo": {
+    ...,
+  }
+}
+</code></pre>
+<h3 id="cmds"><a class="header" href="#cmds"><code>cmds</code></a></h3>
+<p>使用 <code>cmds</code>，自定义某个检查命令。未指定的检查命令以默认方式进行检查。</p>
+<pre><code class="language-json">{
+  "user/repo": {
+    // 一组自定义检查命令：键为检查工具名称，值为 bool、字符串或者字符串数组
+    "cmds": {
+      "fmt": "cargo fmt ...",
+      "clippy": [
+        "cargo clippy --target x86_64-unknown-linux-musl",
+        "cargo clippy --target x86_64-unknown-linux-gnu"
+      ],
+      "lockbud": false
+    }
+  }
+}
+</code></pre>
+<p>注意：</p>
+<ul>
+<li>检查命令字符串暂时只支持单命令，而不支持多命令，也就是不支持 <code>cmd1; cmd2</code>。</li>
+<li>对于字符串数组，每个数组元素表示一次检查。对于上面的 clippy 检查命令数组，它表示进行
+2 次检查，分别在两个目标编译架构上编译和执行检查。</li>
+<li>对于 bool 值，true 表示按默认方式检查（可以无需设置为 true），而 false 表示不要这项检查。</li>
+<li>cmds 里定义的每项检查是覆盖性质的。</li>
+<li>cmds 里定义的每项检查最终都在 package 的 Cargo.toml 所在的目录中执行，因此无需 cd。</li>
+</ul>
+<h3 id="packages"><a class="header" href="#packages"><code>packages</code></a></h3>
+<p>使用 <code>packages</code> 指定某个 package 的检查方式（不限于检查命令和其他配置）。</p>
+<pre><code class="language-json">{
+  "user/repo": {
+    "packages": { // 键为 package name，值为检查配置
+      "package1": { // 指定 repo 中名称为 package1 的包的检查方式
+        "cmds": {
+          "lockbud": false
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<p>通常我们有上面几种配置就足够使用了。但为了简化编写检查命令，有一些额外的配置参数：</p>
+<h3 id="targets"><a class="header" href="#targets"><code>targets</code></a></h3>
+<p><code>targets</code> 接收一个字符串或者一个字符串数组。</p>
+<pre><code class="language-json">{
+  "user/repo": {
+    "targets": [
+      "x86_64-unknown-linux-musl",
+      "x86_64-unknown-linux-gnu"
+    ]
+  }
+}
+</code></pre>
+<p>这表示 target 数组里每个元素都添加到检查命令参数上，它等价于</p>
+<pre><code class="language-json">{
+  "user/repo": {
+    "cmds": {
+      "fmt": [
+        "cargo fmt --target x86_64-unknown-linux-musl",
+        "cargo fmt --target x86_64-unknown-linux-gnu"
+      ],
+      "clippy": [
+        "cargo clippy --target x86_64-unknown-linux-musl",
+        "cargo clippy --target x86_64-unknown-linux-gnu"
+      ],
+      ...
+    }
+  }
+}
+</code></pre>
+<p>当 cmds 和 targets 同时指定时，cmds 具有更高的优先级：</p>
+<pre><code class="language-json">// 只在 x86_64-unknown-linux-gnu 上执行 clippy，
+// 但对其他检查工具，依然应用指定的两个 targets。
+{
+  "user/repo": {
+    "targets": [
+      "x86_64-unknown-linux-musl",
+      "x86_64-unknown-linux-gnu"
+    ],
+    "cmds": {
+      "clippy": "cargo clippy --target x86_64-unknown-linux-gnu"
+    }
+  }
+}
+</code></pre>
+<p>如前所述，<code>packages</code> 可以使用这些检查选项：</p>
+<pre><code class="language-json">{
+  "user/repo": {
+    "packages": {
+      "pkg1": {
+        "targets": "riscv64gc-unknown-none-elf"
+      },
+      "pkg2": {
+        "targets": [
+          "riscv64gc-unknown-none-elf",
+          "x86_64-unknown-none"
+        ]
+      }
+    }
+  }
+}
+</code></pre>
+<h3 id="no_install_targets"><a class="header" href="#no_install_targets"><code>no_install_targets</code></a></h3>
+<pre><code class="language-json">{
+  "user/repo": {
+    "no_install_targets": "x86_64-unknown-uefi"
+  }
+}
+</code></pre>
+<p>从 targets 安装列表中移除某些 targets。值为字符串或者字符串数组。</p>
+<p>当 <code>rustup</code> 不支持安装该 targets 时，那么应该使用此字段明确排除不要安装它们，因为
+os-checker 会对所有检测到的 targets 执行 <code>rustup target install</code>。</p>
+<p>实际案例见 <a href="https://github.com/os-checker/os-checker/issues/96#issuecomment-2373513203">#96</a>。</p>
+<h3 id="setup"><a class="header" href="#setup"><code>setup</code></a></h3>
+<p>使用 <code>setup</code> 选项来设置编译环境，它只会执行一次。</p>
+<p>它接收字符串或者字符串数组。</p>
+<p>目前只适用于 repo，并且在仓库的根目录下执行，不作用于 <code>packages</code>。</p>
+<pre><code class="language-json">{
+  "user/repo": {
+    "setup": "make setup"
+  }
+}
+
+{
+  "user/repo": {
+    "setup": [
+      "apt install ...",
+      "curl ..."
+    ]
+  }
+}
+</code></pre>
+<p>Tracking: <a href="https://github.com/os-checker/os-checker/issues/81">#81</a></p>
+<h3 id="features"><a class="header" href="#features"><code>features</code></a></h3>
+<p>这个暂时还在考虑是否要支持。我初步的想法是，只适用于 <code>packages</code>：</p>
+<pre><code class="language-json">{
+  "user/repo": {
+    "packages": {
+      "pkg1": {
+        "features": "feat1,feat2"
+      }
+    }
+  }
+}
+</code></pre>
+<p>它和 <code>targets</code> 类似，表示附加到每个检查命令上，所以等价于</p>
+<pre><code class="language-json">{
+  "user/repo": {
+    "packages": {
+      "pkg1": {
+        "cmds": {
+          "fmt": "cargo fmt --features=feat1,feat2",
+          "clippy": "cargo clippy --features=feat1,feat2"
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<p>它和 <code>targets</code> 选项一起设置的效果：</p>
+<pre><code class="language-json">{
+  "user/repo": {
+    "targets": ["t1", "t2"],
+    "packages": {
+      "p1": { "features": "xxx" },
+      "p2": { "features": "yyy" }
+    }
+  }
+}
+
+// 等价于写
+{
+  "user/repo": {
+    "targets": ["t1", "t2"],
+    "packages": {
+      "p1": {
+        "cmds": {
+          "fmt": [
+            "cargo fmt --target t1 -features xxx",
+            "cargo fmt --target t2 -features xxx"
+          ],
+          "clippy": [...] // 类似 fmt 的参数
+        }
+      },
+      "p2": {
+        "cmds": {
+          "fmt": [
+            "cargo fmt --target t1 -features yyy",
+            "cargo fmt --target t2 -features yyy"
+          ],
+          ...
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<p>当 <code>features</code> 接收数组，与 <code>targets</code> 类似，表示附加每个元素到每个检查命令：</p>
+<pre><code class="language-json">{
+  "user/repo": {
+    "packages": {
+      "pkg1": {
+        "features": ["feat1", "feat2"]
+      }
+    }
+  }
+}
+
+// 等价于
+{
+  "user/repo": {
+    "packages": {
+      "pkg1": {
+        "cmds": {
+          "fmt": [ // 注意，不是 --features feat1,feat2
+            "cargo fmt --features feat1",
+            "cargo fmt --features feat2"
+          ],
+          ...
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h3 id="metaall_packages"><a class="header" href="#metaall_packages"><code>meta.all_packages</code></a></h3>
+<p>当它为 false 时，对所有 pkgs 禁用检查。</p>
+<pre><code class="language-json">{
+  "user/repo": {
+    "meta": { "all_packages": false }, // 先禁用所有检查
+    "packages": { ... } // 这里罗列的 pkgs 是应该检查的
+  }
+}
+</code></pre>
+<p>见 <a href="https://github.com/os-checker/os-checker/issues/80">#80</a></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="WebUI.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="WebUI.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace.js"></script>
+        <script src="editor.js"></script>
+        <script src="mode-rust.js"></script>
+        <script src="theme-dawn.js"></script>
+        <script src="theme-tomorrow_night.js"></script>
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="theme/pagetoc.js"></script>
+
+
+    </div>
+    </body>
+</html>
