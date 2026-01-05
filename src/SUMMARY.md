@@ -33,6 +33,7 @@
   - [Kani](./checker/kani.md)
   - [RAPx](./checker/rap.md)
   - [Safety Tags](./checker/safety-tags.md)
+    - [UPG](./checker/safety-tags/upg.md)
   - [KernMiri](./checker/KernMiri.md)
     - [Miri POPL'26 笔记](./checker/KernMiri/Miri.md)
     - [Asterinas](./checker/KernMiri/Asterinas.md)
