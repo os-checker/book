@@ -77,6 +77,12 @@
 - [第 73 周]: safety-tool 生成 Rust for Linux 和星绽的安全属性统计信息；准备 14 号演讲《Rust 安全属性标注》slides
 - [第 74 周]: 演讲《Rust 安全属性标注》；safety-tool 更新
 - [第 75 周]: 发现和排查问题：ArceOS、星绽和 RAPx；更新 book：新增 Miri 论文阅读笔记
+- [第 76 周]: 《os-checker 2025 年度总结》并发布 v0.8.1；修复 kern-crates 同步问题
+- [第 77 周]: unsafety-propagation-graph 可视化不安全代码传播图
+- [第 78 周]: unsafety-propagation-graph 实现导航栏、渲染安全属性节点
+- [第 79 周]: unsafety-propagation-graph 新增标准库、星绽 ostd 库展示；调用图功能增强与样式美化
+- [第 80 周]: unsafety-propagation-graph：字段访问关联被调用者；URL 直达和路由参数交互；导航增强（模块树、文档链接等）；安全属性统计图
+- [第 81 周]: unsafety-propagation-graph 添加 ADT 外生审计函数列表、重构调用图、添加 README；调查 Rust 动态链接与异步共享库方案
 
 [第 1-2 周]: https://github.com/os-checker/os-checker/blob/3fdf88db57403949f95c3034608481d64db80764/assets/development-logs.md
 [第 3 周]: https://github.com/os-checker/os-checker/discussions/15
@@ -147,3 +153,9 @@
 [第 73 周]: https://github.com/orgs/os-checker/discussions/414
 [第 74 周]: https://github.com/orgs/os-checker/discussions/415
 [第 75 周]: https://github.com/orgs/os-checker/discussions/416
+[第 76 周]: https://github.com/orgs/os-checker/discussions/425
+[第 77 周]: https://github.com/orgs/os-checker/discussions/426
+[第 78 周]: https://github.com/orgs/os-checker/discussions/427
+[第 79 周]: https://github.com/orgs/os-checker/discussions/428
+[第 80 周]: https://github.com/orgs/os-checker/discussions/429
+[第 81 周]: https://github.com/orgs/os-checker/discussions/430
