@@ -83,6 +83,8 @@
 - [第 79 周]: unsafety-propagation-graph 新增标准库、星绽 ostd 库展示；调用图功能增强与样式美化
 - [第 80 周]: unsafety-propagation-graph：字段访问关联被调用者；URL 直达和路由参数交互；导航增强（模块树、文档链接等）；安全属性统计图
 - [第 81 周]: unsafety-propagation-graph 添加 ADT 外生审计函数列表、重构调用图、添加 README；调查 Rust 动态链接与异步共享库方案
+- [第 82 周]: 《Rust 动态链接与异步共享库》笔记；KMiri：整合仓库、在星绽 OSDK 添加 miri 子命令
+- [第 83 周]: KMiri：更新星绽 ostd 和 Miri 代码；KLint：调查 not_using_prelude 和 Atomic Context Violations 检测
 
 [第 1-2 周]: https://github.com/os-checker/os-checker/blob/3fdf88db57403949f95c3034608481d64db80764/assets/development-logs.md
 [第 3 周]: https://github.com/os-checker/os-checker/discussions/15
@@ -159,3 +161,5 @@
 [第 79 周]: https://github.com/orgs/os-checker/discussions/428
 [第 80 周]: https://github.com/orgs/os-checker/discussions/429
 [第 81 周]: https://github.com/orgs/os-checker/discussions/430
+[第 82 周]: https://github.com/orgs/os-checker/discussions/431
+[第 83 周]: https://github.com/orgs/os-checker/discussions/432
