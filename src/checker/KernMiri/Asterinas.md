@@ -147,6 +147,63 @@ ktest2: initramfs $(CARGO_OSDK)
 星绽使用 `boot.method` 指定生成何种产物，默认为 `QemuDirect` (Qemu 的 --kernel 方式)，但可通过 osdk 参数或者 toml 
 配置文件指定（比如 `grub-rescue-iso`）。
 
+## osdk
+
+* 通过本地 make 脚本安装的 osdk，会在 `cargo osdk new` 期间，将 ostd 依赖指向本地路径。这是通过环境变量 `OSDK_LOCAL_DEV` 控制的。
+
+```bash
+# 终端 1
+cargo osdk test --qemu-args='-s -S'
+
+# 终端 2
+## 查看 elf 格式，32 位
+file target/osdk/myos-osdk-bin.qemu_elf
+#target/osdk/myos-osdk-bin.qemu_elf: ELF 64-bit LSB executable, Intel 80386, version 1 (SYSV), statically linked, with debug_info, not stripped
+gdb -ex "set architecture i386:x86-64" -ex "target remote :1234" target/osdk/myos-osdk-bin.qemu_elf
+```
+
+`ENABLE_KVM=0 LOG_LEVEL=info make ktest`
+
+```rust
+#[cfg(ktest)]
+mod tests {
+    use ostd::prelude::*;
+
+    #[ktest]
+    #[should_panic]
+    fn max_segment_creation() {
+        // Upstream FrameAllocator panics when attempting to allocate a segment with usize::MAX frames
+        let max_frames = usize::MAX;
+        let _ = ostd::mm::FrameAllocOptions::new().alloc_segment(max_frames);
+    }
+}
+```
+
+b ostd::mm::frame::allocator::FrameAllocOptions::new
+
+b myos::__ostd_main
+b ostd::panic::__ostd_panic_handler
+
+cargo osdk run --gdb-server wait-client,addr=:1234
+cargo osdk debug --remote :1234
+
+```
+(gdb) info variables IN_PANIC
+All variables matching regular expression "IN_PANIC":
+File src/cpu/local/cell.rs:
+48:     static ostd::cpu::local::cell::CpuLocalCell<bool>;
+Non-debugging symbols:
+0xffffffff882f75c1  ostd::panic::__ostd_panic_handler::IN_PANIC
+
+# 调试 thread locals
+# 尝试将字面量视为指针
+p *(0xffffffff882f75c1 as *const u8)
+# 或者复用这个地址
+set $_is_panic = 0xffffffff882f75c1
+p *($_is_panic as *const u8)
+```
+
+
 ## 词汇表
 
 CPU:
