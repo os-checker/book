@@ -212,3 +212,42 @@ CPU:
 * AP (Application Processor)：应用处理器。除引导处理器外的其他处理器，上电后处于等待状态，需等待
   BSP 发送唤醒信号才启动。唤醒后会执行简化版引导程序，后续主要承接 BSP 分配的应用计算、任务处理等工作，分担系统负载，提升多任务处理效率。
 
+## 开发技巧
+
+### 解决 quota
+
+```bash
+# 查看存储限额
+quota -vs
+# 查看最大的目录
+du -h --max-depth=1 ~ | sort -h
+# 查看所有分区空间
+df -alh
+# 查找当前用户超过 100M 的所有文件
+find / -user gh-zjp-CN -xdev -type f -size +100M 2>/dev/null
+# 删除 podman 未使用的缓存
+podman system prune -a --volumes
+# 查看已删除的文件，但仍被进程占用而未释放空间
+lsof +L1 | grep deleted
+# 清空大文件
+> /big/file
+# 退出进程
+pkill -9 xx
+```
+
+### podman 运行星绽
+
+```bash
+cd asterinas
+# 构建镜像
+podman build \
+  -f tools/docker/Dockerfile \
+  --build-arg ASTER_RUST_VERSION=$(grep "channel" rust-toolchain.toml | awk -F '"' '{print $2}') \
+  --build-arg BASE_VERSION=$(cat DOCKER_IMAGE_VERSION) \
+  -t asterinas/asterinas:$(cat DOCKER_IMAGE_VERSION) \
+  .
+# 后台运行（状态持久化）
+podman run -itd -v .:/asterinas --replace --name asterinas localhost/asterinas/asterinas:0.17.1-20260308 sleep infinity
+# 终端连接
+podman exec -it asterinas bash
+```
