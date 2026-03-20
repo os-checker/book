@@ -106,6 +106,47 @@ ktest2: initramfs $(CARGO_OSDK)
         -- max_segment_creation $(CARGO_OSDK_TEST_ARGS)
 ```
 
+## Qemu 加载内核
+
+/<details>
+
+<summary>Qemu 加载内核的方式和所需的文件格式</summary>
+
+1. 直接加载内核 (使用 `-kernel` 参数)
+如果你想绕过启动加载器（如 GRUB），直接让 QEMU 把内核读入内存并启动，通常需要以下格式：
+
+*   **Linux 内核常用格式：**
+    *   **x86/x86_64:** 通常使用 **`bzImage`** 或 **`vmlinuz`**。这是 Linux 编译出来的标准压缩内核格式。
+    *   **ARM/ARM64:** 常用 **`zImage`** (压缩)、**`Image`** (未压缩的原始二进制) 或 **`uImage`** (带 U-Boot 头的格式)。
+*   **ELF 格式 (非常常用):**
+    *   **支持情况：** QEMU 原生支持加载 **ELF** 格式的内核。
+    *   **适用场景：** 它是**裸机开发（Bare Metal）**、操作系统实验（如 MIT 6.828）或嵌入式开发的首选。
+
+    *   **优势：** ELF 文件包含符号信息和段地址，QEMU 能自动识别该把代码加载到内存的哪个位置（入口点）。
+    *   **特定协议：** 如果是 x86 裸机内核，通常需要符合 **Multiboot** 规范（在 ELF 中包含 Multiboot Header），QEMU 才能正确引导。
+*   **Raw Binary (原始二进制 `.bin`):**
+    *   通常用于极简的裸机程序。QEMU 会根据不同架构将其加载到默认地址（如 ARM 某些单板加载到 `0x10000`）。
+
+2. 通过镜像启动 (使用 ISO/磁盘镜像)
+**ISO 文件不是内核格式**，它是一个完整的“光盘镜像”。
+
+*   **如果你只有 ISO：** 你不能用 `-kernel` 加载它。你应该使用 `-cdrom myos.iso` 或 `-drive file=myos.iso,format=raw`。
+*   **内部逻辑：** QEMU 会启动 BIOS 或 UEFI 固件，固件再去 ISO 里找 Bootloader（如 GRUB 或 ISOLINUX），由 Bootloader 最终去加载里面的内核。
+
+3. 核心差异对比
+
+| 特性 | `-kernel <file>` | `-cdrom/hda <image>` |
+| :--- | :--- | :--- |
+| **支持格式** | **ELF**, `bzImage`, `zImage`, `uImage`, `.bin` | **ISO**, `qcow2`, `img`, `vmdk` |
+| **启动流程** | **直接加载到内存**，跳过 Bootloader | 模拟硬件启动，需经过 **BIOS/UEFI** |
+| **额外要求** | 通常需要配合 `-initrd` (文件系统) 和 `-append` (启动参数) | 内核和文件系统都已封装在镜像内 |
+| **常见用途** | 内核开发、裸机实验、快速测试 | 运行完整的操作系统（如 Ubuntu, Windows） |
+
+</details>
+
+星绽使用 `boot.method` 指定生成何种产物，默认为 `QemuDirect` (Qemu 的 --kernel 方式)，但可通过 osdk 参数或者 toml 
+配置文件指定（比如 `grub-rescue-iso`）。
+
 ## 词汇表
 
 CPU:
