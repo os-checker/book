@@ -88,6 +88,24 @@ test result: ok. 1 passed; 0 failed; 0 filtered out.
 [ktest runner] All crates tested.
 ```
 
+## 运行测试
+
+全部测试：
+* `make test` 运行用户态测试
+* `make ktest` 内核测试
+
+指定测试：
+* `./tools/run_ktest.sh --crates ostd -- max_segment_creation`
+
+```make
+.PHONY: ktest2
+ktest2: CONSOLE = ttyS0
+ktest2: initramfs $(CARGO_OSDK)
+	./tools/run_ktest.sh \
+        --crates ostd \
+        -- max_segment_creation $(CARGO_OSDK_TEST_ARGS)
+```
+
 ## 词汇表
 
 CPU:
