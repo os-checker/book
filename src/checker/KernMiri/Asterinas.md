@@ -179,13 +179,32 @@ mod tests {
 }
 ```
 
+## GDB
+
+```gdb
 b ostd::mm::frame::allocator::FrameAllocOptions::new
 
 b myos::__ostd_main
 b ostd::panic::__ostd_panic_handler
 
+
+b osdk_test_kernel::__ostd_panic_handler
+osdk_test_kernel::panic_handler (info=0xffffdfffffffbd70) at src/lib.rs:73
+73          let unwind_reason_code = begin_panic(Box::new(throw_info.clone()));
+unwinding::unwinder::with_context<unwinding::abi::UnwindReasonCode, unwinding::unwinder::_Unwind_RaiseException::{closure_env#0}> (f=...)
+    at src/unwinder/mod.rs:39
+0xffffffff882e0c2c in unwinding::unwinder::arch::x86_64::save_context ()
+https://docs.rs/crate/unwinding/0.2.8/source/src/unwinder/arch/x86_64.rs
+```
+
+```bash
+# cargo osdk --kernel myos
 cargo osdk run --gdb-server wait-client,addr=:1234
 cargo osdk debug --remote :1234
+
+# cargo osdk myos
+cargo osdk test --qemu-args="-s -S"
+```
 
 ```
 (gdb) info variables IN_PANIC
@@ -202,6 +221,77 @@ p *(0xffffffff882f75c1 as *const u8)
 set $_is_panic = 0xffffffff882f75c1
 p *($_is_panic as *const u8)
 ```
+
+```gdb
+dashboard -layout assembly source stack variables
+```
+
+
+`Ctrl-u` 清除当前输入行。
+
+正常 fde：
+
+```
+>>> p fde
+$8 = gimli::read::cfi::FrameDescriptionEntry<gimli::read::endian_slice::EndianSlice<gimli::endianity::LittleEndian>, usize> {
+  offset: 9223372041553715587,
+  length: 9223372041553719683,
+  format: (unknown: 0x83),
+  cie: gimli::read::cfi::CommonInformationEntry<gimli::read::endian_slice::EndianSlice<gimli::endianity::LittleEndian>, usize> {
+    offset: 9223372041553686915,
+    length: 9223372041553691011,
+    format: (unknown: 0x13),
+    version: 24,
+    augmentation: core::option::Option<gimli::read::cfi::Augmentation>::Some(gimli::read::cfi::Augmentation {
+        lsda: <error reading variable: Could not find active enum variant>,
+        personality: core::option::Option<(gimli::constants::DwEhPe, gimli::read::cfi::Pointer)>::Some((
+            gimli::constants::DwEhPe (
+              131
+            ),
+            <error reading variable: Could not find active enum variant>
+          )),
+        fde_address_encoding: <error reading variable: Could not find active enum variant>,
+        is_signal_trampoline: true
+      }),
+    address_size: 1,
+    code_alignment_factor: 9223372041553695107,
+    data_alignment_factor: -9223372032155852413,
+    return_address_register: gimli::common::Register (
+      61827
+    ),
+    initial_instructions: gimli::read::endian_slice::EndianSlice<gimli::endianity::LittleEndian> {
+      slice: &[u8] 0x8000000118139183,
+      endian: gimli::endianity::LittleEndian
+    }
+  },
+  initial_address: 9223372041553723779,
+  address_range: 9223372041553727875,
+  augmentation: core::option::Option<gimli::read::cfi::AugmentationData>::Some(gimli::read::cfi::AugmentationData {
+      lsda: core::option::Option<gimli::read::cfi::Pointer>::Some(<error reading variable: Could not find active enum variant>)
+    }),
+  instructions: gimli::read::endian_slice::EndianSlice<gimli::endianity::LittleEndian> {
+    slice: &[u8] 0x8000000118140183,
+    endian: gimli::endianity::LittleEndian
+  }
+}
+```
+
+```
+b osdk_test_kernel::__ostd_panic_handler
+b unwinding::unwinder::_Unwind_Resume
+b unwinding::panicking::catch_unwind::do_catch<unwinding::panic::RustPanic>
+
+在函数内运行到第 n 行，用于以快速跳过一段代码，尤其在遇到循环时很方便，因为可以让代码越过循环，停留在第 n 行；
+如果行号在当前函数帧之外，则停留。
+advance <loc>
+或者 
+until <loc> 简写 u<loc>
+
+在第 n 行设置一次性断点，然后可以 c 运行到断点处
+tbreak <loc>
+```
+
+INSTALL_CONTEXT: Self = Self(7);
 
 
 ## 词汇表
