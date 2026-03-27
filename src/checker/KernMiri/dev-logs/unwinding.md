@@ -1,3 +1,6 @@
+
+背景：[试图去除 `-Zbuild-std`，但遇到 should_panic 的测试失败](https://github.com/asterinas/asterinas/pull/3035)
+
 ## 测试代码
 
 ```bash
