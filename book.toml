@@ -7,7 +7,7 @@ title = "os-checker book"
 
 [preprocessor.theme]
 pagetoc = false
-sidebar-width = "200px"
+sidebar-width = "300px"
 
 pagetoc-width = "16%"
 content-max-width = "86%"
@@ -37,4 +37,3 @@ enable = false
 [output.theme-ace]
 theme-white = "xcode"
 theme-dark = "monokai"
-
