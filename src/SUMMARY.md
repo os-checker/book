@@ -37,6 +37,7 @@
   - [KernMiri](./checker/KernMiri.md)
     - [Miri POPL'26 笔记](./checker/KernMiri/Miri.md)
     - [Asterinas](./checker/KernMiri/Asterinas.md)
+      - [unwinding 调试](./checker/KernMiri/dev-logs/unwinding.md)
     - [ArceOS](./checker/KernMiri/ArceOS.md)
     - [Priroda](./checker/KernMiri/Priroda.md)
 

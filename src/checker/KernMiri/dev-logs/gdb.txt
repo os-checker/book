@@ -1,0 +1,59 @@
+# wget -P ~ https://github.com/cyrus-and/gdb-dashboard/raw/master/.gdbinit
+# cargo osdk test --qemu-args="-s -S"
+
+# qemu 的 -s 端口为 1234
+target remote :1234
+
+# file target/osdk/os-osdk-bin.qemu_elf 
+# os-osdk-bin.qemu_elf: ELF 64-bit LSB executable, Intel 80386, version 1 (SYSV)...
+set architecture i386:x86-64
+
+# 设置汇编语法
+set disassembly-flavor intel
+# 显示人类可读的函数名（这个貌似需要在 GDB 运行之后执行）
+set print asm-demangle on
+
+# set logger file
+set logging file log.txt
+set logging overwrite off
+
+# enable history
+set history save on
+set history size 10000
+set history filename ~/.gdb_history
+set history remove-duplicates unlimited
+
+# dashboard styling
+dash -layout assembly source stack variables
+dash source -style highlight-line True
+dash source -style height 15
+dash source -style path True
+dash stack -style limit 5
+dash assembly -style height 7
+dash assembly -style function False
+dash assembly -style opcodes True
+dash assembly -style highlight-line True
+dash variables -style align True
+dash variables -style compact False
+dash variables -style sort True
+# tips: 
+# dash source scroll 5 # or -5 to scroll the view down or up
+# dash assembly scroll 5 # or -5 to scroll the view down or up
+
+# 加载 ELF 文件（如果作为执行 gdb 命令的参数或者先于 qemu 连接，会遇到 internal error）
+file target/osdk/os-osdk-bin.qemu_elf
+
+# 设置断点
+b osdk_test_kernel::__ostd_panic_handler
+b unwinding::unwinder::_Unwind_RaiseException
+b unwinding::unwinder::_Unwind_RaiseException::{closure#0}
+b unwinding::panicking::catch_unwind::do_catch<unwinding::panic::RustPanic>
+# 以下两个不会设置断点，可能因为初始化期间尚未支持路径
+b /root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/unwinding-0.2.8/src/unwinder/mod.rs:161
+b /root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/unwinding-0.2.8/src/unwinder/mod.rs:163
+
+# 显示汇编：
+# 1. x/i addr 在 addr 处以字节方式反汇编一条指令；x/{n}i 则从那反汇编 n 条指令；addr 可以是字面值、变量、或者表达式
+# 2. disassemble addr 反汇编这个地址所在的整个函数
+# 3. disassemble /sr addr 反汇编这个地址所在的整个函数，并对应显示源码和 opcode
+
