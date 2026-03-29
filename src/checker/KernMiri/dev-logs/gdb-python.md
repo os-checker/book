@@ -78,6 +78,33 @@ main thread: hi
 [Inferior 1 (process 2910865) exited normally]
 ```
 
+## `catch exec`
+
+上面的例子成功在子进程发起之后切换并执行。但这并不足够，因为我们需要自动切换但不自动执行。
+
+可以利用 `catch exec` 设置一个“断点”，它捕捉 exec 系统调用，并在切换子进程之后暂停，然后我们能够正常对它调试，比如查询符号、设置断点、运行 continue 等
+
+```
+>>> set detach-on-fork off
+>>> set schedule-multiple on
+>>> catch exec
+Catchpoint 1 (exec)
+>>> r
+Starting program: /home/gh-zjp-CN/tmp/hi/target/debug/hi 
+
+main thread: start
+[New inferior 2 (process 2914989)]
+[Switching to process 2914989]
+
+Thread 2.1 "echo" hit Catchpoint 1 (exec'd /usr/bin/echo), 0x00007ffff7fe4540 in _start () from /lib64/ld-linux-x86-64.so.2
+>>> i inferiors # 注意 echo 进程有连接状态，而不是 null
+  Num  Description       Connection           Executable        
+  1    process 2914985   1 (native)           /home/gh-zjp-CN/tmp/hi/target/debug/hi 
+* 2    process 2914989   1 (native)           /usr/bin/echo     
+>>> f # 查看当前栈帧，我们停在子进程的程序入口
+#0  0x00007ffff7fe4540 in _start () from /lib64/ld-linux-x86-64.so.2
+```
+
 # GDB Python API
 
 ## gdb 对象
