@@ -37,9 +37,12 @@
   - [KernMiri](./checker/KernMiri.md)
     - [Miri POPL'26 笔记](./checker/KernMiri/Miri.md)
     - [Asterinas](./checker/KernMiri/Asterinas.md)
-      - [unwinding 调试](./checker/KernMiri/dev-logs/unwinding.md)
     - [ArceOS](./checker/KernMiri/ArceOS.md)
     - [Priroda](./checker/KernMiri/Priroda.md)
+    - [记录]()
+      - [unwinding 调试](./checker/KernMiri/dev-logs/unwinding.md)
+      - [分析 Miri 源码](./checker/KernMiri/dev-logs/analyze-miri.md)
+      - [GDB Python 插件](./checker/KernMiri/dev-logs/gdb-python.md)
 
 - [开发日志](./devlogs.md)
   - [2025 年度总结](./devlogs/2025.md)
